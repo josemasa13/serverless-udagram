@@ -3,7 +3,10 @@ import 'source-map-support/register'
 import * as AWS from 'aws-sdk'
 import { APIGateway } from 'aws-sdk'
 
-const docClient = new AWS.DynamoDB.DocumentClient()
+const AWSXRay = require('aws-xray-sdk')
+const XAWS = AWSXRay.captureAWS(AWS)
+
+const docClient = new XAWS.DynamoDB.DocumentClient()
 
 const connectionsTable = process.env.CONNECTIONS_TABLE
 const stage = process.env.STAGE
@@ -14,7 +17,7 @@ const connectionParams = {
     endpoint: `${apiId}.execute-api.us-east-1.amazonaws.com/${stage}`
 }
 
-const apiGateway = new AWS.ApiGatewayManagementApi(connectionParams)
+const apiGateway = new XAWS.ApiGatewayManagementApi(connectionParams)
 
 
 async function processS3Event(s3Event: S3Event){
